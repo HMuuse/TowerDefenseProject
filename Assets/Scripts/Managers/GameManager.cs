@@ -49,7 +49,6 @@ public class GameManager : MonoBehaviour
         Instance = this;
 
         DontDestroyOnLoad(gameObject);
-        InitializeGame();
     }
 
     private void Start()
@@ -71,6 +70,7 @@ public class GameManager : MonoBehaviour
 
         // Activate the current state's canvas
         ActivateCanvas(currentState);
+        InitializeGame();
     }
 
     private void Update()
@@ -161,6 +161,11 @@ public class GameManager : MonoBehaviour
     public void AddScore(int points)
     {
         score += points;
+    }
+
+    public void RemoveScore(int points)
+    {
+        score -= points;
     }
 
     public int GetScore()

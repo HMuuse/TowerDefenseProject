@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
         };
 
         // Ensure all canvases are disabled except for the initial state
-        foreach (var canvas in canvasDictionary.Values)
+        foreach (Canvas canvas in canvasDictionary.Values)
         {
             if (canvas != null)
                 canvas.gameObject.SetActive(false);

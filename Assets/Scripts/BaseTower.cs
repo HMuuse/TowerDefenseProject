@@ -66,6 +66,13 @@ public class BaseTower : MonoBehaviour
         }
     }
 
+    public void UpgradeTower(int extraDamage, float extraRange, float reducedCooldown)
+    {
+        damage += extraDamage;
+        range += extraRange;
+        fireRate -= reducedCooldown;
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

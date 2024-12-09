@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
 {
     public event Action<GameState> OnStateChanged;
     public event EventHandler<int> OnNewWave;
+    public event EventHandler<int> OnScoreChanged;
 
     public static GameManager Instance { get; private set; }
 
@@ -51,7 +52,14 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        TowerManager.Instance.OnTowerPlaced += TowerManager_OnTowerPlaced;
+
         InitializeGame();
+    }
+
+    private void TowerManager_OnTowerPlaced(object sender, int scoreSpent)
+    {
+        RemoveScore(scoreSpent); 
     }
 
     private void Update()
@@ -120,11 +128,13 @@ public class GameManager : MonoBehaviour
     public void AddScore(int points)
     {
         score += points;
+        OnScoreChanged?.Invoke(this, score);
     }
 
     public void RemoveScore(int points)
     {
         score -= points;
+        OnScoreChanged?.Invoke(this, score);
     }
 
     public int GetScore()

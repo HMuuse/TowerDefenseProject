@@ -2,21 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class GameManager : MonoBehaviour
 {
     public event Action<GameState> OnStateChanged;
+    public event EventHandler<int> OnNewWave;
 
     public static GameManager Instance { get; private set; }
-
-    [SerializeField]
-    private Canvas gameOverCanvas;
-    [SerializeField]
-    private Canvas pauseCanvas;
-    [SerializeField]
-    private Canvas playCanvas;
-
-    private Dictionary<GameState, Canvas> canvasDictionary;
 
     public enum GameState
     {
@@ -36,7 +29,12 @@ public class GameManager : MonoBehaviour
     private int lives;
     private float waveTimer;
     [SerializeField]
-    private float waveInterval = 15f;
+    private float waveInterval;
+    [SerializeField]
+    private int currentWave = 1;
+
+    [SerializeField]
+    private List<BaseEnemy> enemyList = new List<BaseEnemy>();
 
     private void Awake()
     {
@@ -53,23 +51,6 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        // Initialize canvas dictionary
-        canvasDictionary = new Dictionary<GameState, Canvas>
-        {
-            { GameState.Playing, playCanvas },
-            { GameState.Paused, pauseCanvas },
-            { GameState.GameOver, gameOverCanvas }
-        };
-
-        // Ensure all canvases are disabled except for the initial state
-        foreach (Canvas canvas in canvasDictionary.Values)
-        {
-            if (canvas != null)
-                canvas.gameObject.SetActive(false);
-        }
-
-        // Activate the current state's canvas
-        ActivateCanvas(currentState);
         InitializeGame();
     }
 
@@ -103,7 +84,6 @@ public class GameManager : MonoBehaviour
     private void HandleGameStateChanges(GameState newState)
     {
         Debug.Log($"Game state changed to: {newState}");
-        ActivateCanvas(newState);
 
         switch (newState)
         {
@@ -119,40 +99,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void ActivateCanvas(GameState state)
-    {
-        // Deactivate all canvases
-        foreach (Canvas canvas in canvasDictionary.Values)
-        {
-            if (canvas != null)
-                canvas.gameObject.SetActive(false);
-        }
-
-        // Activate the canvas corresponding to the current state
-        if (canvasDictionary.TryGetValue(state, out Canvas activeCanvas) && activeCanvas != null)
-        {
-            activeCanvas.gameObject.SetActive(true);
-        }
-    }
-
     private void HandleWaveTimer()
     {
         waveTimer += Time.deltaTime;
         if (waveTimer >= waveInterval)
         {
-            SpawnEnemyWave();
+            currentWave++;
+            OnNewWave?.Invoke(this, currentWave);
             waveTimer = 0f;
         }
     }
 
-    private void SpawnEnemyWave()
-    {
-        // TODO: spawn enemies
-    }
-
     private void InitializeGame()
     {
-        score = 0;
         lives = 3;
         waveTimer = 0f;
         SetGameState(GameState.Playing);
@@ -189,5 +148,28 @@ public class GameManager : MonoBehaviour
     private void OnDestroy()
     {
         Instance = null;
+    }
+
+    private void BaseEnemy_OnEnemyDied(object sender, int scoreToAdd)
+    {
+        AddScore(scoreToAdd);
+    }
+
+    public void RegisterEnemy(BaseEnemy enemy)
+    {
+        if (!enemyList.Contains(enemy))
+        {
+            enemyList.Add(enemy);
+            enemy.OnEnemyDied += BaseEnemy_OnEnemyDied;
+        }
+    }
+
+    public void DeregisterEnemy(BaseEnemy enemy)
+    {
+        if (enemyList.Contains(enemy))
+        {
+            enemyList.Remove(enemy);
+            enemy.OnEnemyDied -= BaseEnemy_OnEnemyDied;
+        }
     }
 }

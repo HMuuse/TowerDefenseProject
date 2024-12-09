@@ -1,13 +1,18 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BaseEnemy : MonoBehaviour
 {
+    public event EventHandler<int> OnEnemyDied;
+
     [SerializeField]
     private float speed = 3f;
     [SerializeField]
     private int health = 1;
+    [SerializeField]
+    private int pointsWorth;
     private Transform target;
 
     [SerializeField]
@@ -17,6 +22,16 @@ public class BaseEnemy : MonoBehaviour
     private void Awake()
     {
         target = GameObject.FindGameObjectWithTag("Base").transform;
+    }
+
+    private void OnEnable()
+    {
+        GameManager.Instance.RegisterEnemy(this);
+    }
+
+    private void OnDisable()
+    {
+        GameManager.Instance.DeregisterEnemy(this);
     }
 
     private void Start()
@@ -57,13 +72,15 @@ public class BaseEnemy : MonoBehaviour
     {
         health -= damage;
         if (health <= 0)
+        {
             Die();
+        }
     }
 
     protected virtual void Die()
     {
         isDead = true;
-        // Play death animation or effects
+        OnEnemyDied?.Invoke(this, pointsWorth);
         Destroy(gameObject);
     }
 }

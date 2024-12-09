@@ -11,8 +11,7 @@ GameObject:
   - component: {fileID: 1265399888525936253}
   - component: {fileID: 7300554863818507074}
   - component: {fileID: 1483419799870102835}
-  - component: {fileID: 3712610665768812443}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: EnemyVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,29 +83,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &3712610665768812443
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4236517313885684540}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7960899690805858316
 GameObject:
   m_ObjectHideFlags: 0
@@ -117,7 +93,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2409921385086437143}
   - component: {fileID: 473914396964314636}
-  m_Layer: 0
+  - component: {fileID: 9128149362245013727}
+  m_Layer: 6
   m_Name: EnemyPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -154,5 +131,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   health: 1
-  target: {fileID: 0}
+  pointsWorth: 0
   isDead: 0
+--- !u!136 &9128149362245013727
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7960899690805858316}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}

@@ -24,6 +24,7 @@ public class TowerManager : MonoBehaviour
     private ResourceManager resourceManager;
 
     private bool isPlacing = false;
+    private bool isPaused = false;
 
     private void Awake()
     {
@@ -40,12 +41,14 @@ public class TowerManager : MonoBehaviour
 
     private void Start()
     {
+        GameManager.Instance.OnStateChanged += GameManager_OnStateChanged;
+
         currentTowerSO = towerSOs[0];
     }
 
     private void Update()
     {
-        if (isPlacing)
+        if (isPlacing && !isPaused)
         {
 
             placementVisual.SetActive(true);
@@ -77,6 +80,11 @@ public class TowerManager : MonoBehaviour
         {
             isPlacing = !isPlacing;
         }
+    }
+
+    private void GameManager_OnStateChanged(GameManager.GameState obj)
+    {
+        isPaused = !isPaused;
     }
 
     private bool IsPlaceable(Vector3 position)

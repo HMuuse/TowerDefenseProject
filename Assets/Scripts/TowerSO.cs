@@ -6,6 +6,13 @@ using UnityEngine;
 public class TowerSO : ScriptableObject
 {
     public GameObject prefab;
-    public int towerCost;
+    public List<ResourceCost> resourceCosts;
 
+}
+
+[System.Serializable]
+public class  ResourceCost
+{
+    public ResourceType resourceType;
+    public int cost;
 }

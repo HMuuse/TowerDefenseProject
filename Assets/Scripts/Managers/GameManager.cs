@@ -52,14 +52,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        TowerManager.Instance.OnTowerPlaced += TowerManager_OnTowerPlaced;
-
         InitializeGame();
-    }
-
-    private void TowerManager_OnTowerPlaced(object sender, int scoreSpent)
-    {
-        RemoveScore(scoreSpent); 
     }
 
     private void Update()

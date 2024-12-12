@@ -131,7 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   health: 1
-  pointsWorth: 0
+  pointsWorth: 25
   isDead: 0
 --- !u!136 &9128149362245013727
 CapsuleCollider:

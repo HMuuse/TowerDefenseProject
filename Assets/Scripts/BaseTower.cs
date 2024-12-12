@@ -5,33 +5,42 @@ using UnityEngine;
 public class BaseTower : MonoBehaviour
 {
     [SerializeField]
-    private LayerMask enemyLayer;
+    protected LayerMask enemyLayer;
     [SerializeField]
-    private float range = 5f;
+    protected float range = 5f;
     [SerializeField]
-    private float fireRate = 1f;
+    protected float fireRate = 1f;
     [SerializeField]
-    private int damage = 10;
+    protected int damage = 10;
 
-    private float attackCooldown = 0f;
+    protected float attackCooldown = 0f;
     [SerializeField]
-    private Transform target;
+    protected Transform target;
+    [SerializeField]
+    protected GameObject bulletProjectilePrefab;
+    [SerializeField]
+    protected Transform shootPoint;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    protected int currentLevel = 1;
+    protected int maxLevel = 5;
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         FindTarget();
         RotateToTarget();
+
+        if (attackCooldown <= 0f && target != null)
+        {
+            Shoot();
+            attackCooldown = 1f / fireRate; // Reset cooldown based on fire rate
+        }
+
+        attackCooldown -= Time.deltaTime; // Decrease cooldown over time
     }
 
 
-    void FindTarget()
+    protected void FindTarget()
     {
         // Only check objects in the enemy layer
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, range, enemyLayer);
@@ -55,7 +64,7 @@ public class BaseTower : MonoBehaviour
         target = nearestEnemy;
     }
 
-    private void RotateToTarget()
+    protected void RotateToTarget()
     {
         if (target != null)
         {
@@ -66,14 +75,37 @@ public class BaseTower : MonoBehaviour
         }
     }
 
-    public void UpgradeTower(int extraDamage, float extraRange, float reducedCooldown)
+    protected void Shoot()
     {
-        damage += extraDamage;
-        range += extraRange;
-        fireRate -= reducedCooldown;
+        BaseEnemy enemy = target.GetComponent<BaseEnemy>();
+        if (enemy != null)
+        {
+            GameObject bulletProjectileTransform =
+            Instantiate(bulletProjectilePrefab, shootPoint.transform.position, Quaternion.identity);
+            BulletProjectile bulletProjectile = bulletProjectileTransform.GetComponent<BulletProjectile>();
+            bulletProjectile.SetUp(enemy.gameObject.transform.position);
+
+            enemy.TakeDamage(damage);
+        }
     }
 
-    private void OnDrawGizmosSelected()
+    public virtual void UpgradeTower(int extraDamage, float extraRange, float reducedCooldown)
+    {
+        if (currentLevel != maxLevel)
+        {
+            damage += extraDamage;
+            range += extraRange;
+            fireRate -= reducedCooldown;
+            currentLevel++;
+        }
+    }
+
+    public bool IsMaxLevel()
+    {
+        return currentLevel == maxLevel;
+    }
+
+    protected void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, range);

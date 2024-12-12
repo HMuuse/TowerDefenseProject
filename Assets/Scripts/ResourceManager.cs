@@ -13,14 +13,15 @@ public class ResourceManager : MonoBehaviour
 
     [SerializeField]
     private List<Resource> resources;
+    private List<BaseEnemy> enemyList = new List<BaseEnemy>();
 
     public ResourceManager()
     {
         resources = new List<Resource>()
         {
-            new Resource(ResourceType.Gold, 100, 1000),
-            new Resource(ResourceType.Stone, 100, 1000),
-            new Resource(ResourceType.Wood, 100, 1000)
+            new Resource(ResourceType.Gold, 100, 9999),
+            new Resource(ResourceType.Stone, 100, 9999),
+            new Resource(ResourceType.Wood, 100, 9999)
         };
     }
 
@@ -91,6 +92,31 @@ public class ResourceManager : MonoBehaviour
             case ResourceType.Wood:
                 OnWoodChanged?.Invoke(this, newAmount);
                 break;
+        }
+    }
+
+    private void BaseEnemy_OnEnemyDied(object sender, int resourcesToAdd)
+    {
+        AddResource(ResourceType.Gold, resourcesToAdd);
+        AddResource(ResourceType.Wood, resourcesToAdd);
+        AddResource(ResourceType.Stone, resourcesToAdd);
+    }
+
+    public void RegisterEnemy(BaseEnemy enemy)
+    {
+        if (!enemyList.Contains(enemy))
+        {
+            enemyList.Add(enemy);
+            enemy.OnEnemyDied += BaseEnemy_OnEnemyDied;
+        }
+    }
+
+    public void DeregisterEnemy(BaseEnemy enemy)
+    {
+        if (enemyList.Contains(enemy))
+        {
+            enemyList.Remove(enemy);
+            enemy.OnEnemyDied -= BaseEnemy_OnEnemyDied;
         }
     }
 }

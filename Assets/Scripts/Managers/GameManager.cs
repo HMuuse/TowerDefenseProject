@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour, IRegisterEnemy
 {
     public event Action<GameState> OnStateChanged;
     public event EventHandler<int> OnNewWave;
@@ -53,6 +53,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         InitializeGame();
+        OnNewWave?.Invoke(this, currentWave);
     }
 
     private void Update()

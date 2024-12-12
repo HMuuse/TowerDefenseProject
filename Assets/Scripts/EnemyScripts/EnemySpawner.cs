@@ -17,12 +17,22 @@ public class EnemySpawner : MonoBehaviour
 
     private void GameManager_OnNewWave(object sender, int waveCount)
     {
-        int randomSpawnPoint = Random.Range(0, spawnPoints.Count);
+        int enemiesToSpawn = enemyPrefabs.Count * waveCount;
 
-        foreach (GameObject enemy in enemyPrefabs)
+        for (int i = 0; i < enemiesToSpawn; i++)
         {
-            Instantiate(enemy, spawnPoints[randomSpawnPoint].position, Quaternion.identity);
+            int randomSpawnPoint = Random.Range(0, spawnPoints.Count);
+            int randomEnemyIndex = Random.Range(0, enemyPrefabs.Count);
+
+            GameObject enemy = 
+                Instantiate(enemyPrefabs[randomEnemyIndex], spawnPoints[randomSpawnPoint].position, Quaternion.identity);
+            BaseEnemy enemyScript = enemy.GetComponent<BaseEnemy>();
+            if (enemyScript != null)
+            {
+                enemyScript.health = enemyScript.health * waveCount;
+            }
         }
+
     }
 
     void Update()

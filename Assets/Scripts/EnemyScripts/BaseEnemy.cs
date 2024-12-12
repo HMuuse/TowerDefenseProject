@@ -8,50 +8,44 @@ public class BaseEnemy : MonoBehaviour
     public event EventHandler<int> OnEnemyDied;
 
     [SerializeField]
-    private float speed = 3f;
+    protected float speed = 3f;
+    public int health;
     [SerializeField]
-    private int health = 1;
-    [SerializeField]
-    private int pointsWorth;
-    private Transform target;
+    protected int pointsWorth;
+    protected Transform target;
 
     [SerializeField]
-    private bool isDead = false;
-    private bool isPaused;
+    protected bool isDead = false;
+    protected bool isPaused;
 
-    private void Awake()
+    protected void Awake()
     {
         target = GameObject.FindGameObjectWithTag("Base").transform;
     }
 
-    private void OnEnable()
+    protected void OnEnable()
     {
         GameManager.Instance.RegisterEnemy(this);
+        ResourceManager.Instance.RegisterEnemy(this);
     }
 
-    private void OnDisable()
+    protected void OnDisable()
     {
         GameManager.Instance.DeregisterEnemy(this);
+        ResourceManager.Instance.DeregisterEnemy(this);
     }
 
-    private void Start()
+    protected void Start()
     {
         GameManager.Instance.OnStateChanged += GameManager_OnStateChanged;
     }
 
-    private void GameManager_OnStateChanged(GameManager.GameState newState)
+    protected void GameManager_OnStateChanged(GameManager.GameState newState)
     {
-        if (newState == GameManager.GameState.Paused)
-        {
-            isPaused = true;
-        }
-        else
-        {
-            isPaused = false;
-        }
+        isPaused = !isPaused;
     }
 
-    private void Update()
+    protected void Update()
     {
         if (!isDead && !isPaused)
         {

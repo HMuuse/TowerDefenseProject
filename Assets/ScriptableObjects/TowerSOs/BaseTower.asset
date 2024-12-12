@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefab: {fileID: 1076837577215207734, guid: a5d1bfd43748fee4790df47632fada55, type: 3}
   resourceCosts:
-  - resourceType: 0
+  - resourceType: 2
     cost: 50
   - resourceType: 1
     cost: 20

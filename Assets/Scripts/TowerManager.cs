@@ -21,9 +21,12 @@ public class TowerManager : MonoBehaviour
     [SerializeField]
     private GameObject placementVisual;
     [SerializeField]
-    private ResourceManager resourceManager;
+    private GameObject upgradeText;
+    [SerializeField]
+    private int upgradeCost;
 
     private bool isPlacing = false;
+    private bool isUpgrading = false;
     private bool isPaused = false;
 
     private void Awake()
@@ -76,9 +79,63 @@ public class TowerManager : MonoBehaviour
             placementVisual.SetActive(false);
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab)) 
+        if (isUpgrading && !isPaused)
         {
-            isPlacing = !isPlacing;
+            upgradeText.SetActive(true);
+
+            if (Input.GetMouseButtonDown(0) && CanAffordTower())
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out RaycastHit hitInfo))
+                {
+                    GameObject hitObject = hitInfo.collider.gameObject;
+                    if (hitObject.CompareTag("Tower"))
+                    {
+                        if (hitObject.TryGetComponent<BaseTower>(out var towerScript))
+                        {
+                            if (!towerScript.IsMaxLevel())
+                            {
+                                towerScript.UpgradeTower(10, 2f, 0.5f);
+                                DeductResources();
+                                Debug.Log("Tower upgraded successfully!");
+                            }
+                            else
+                            {
+                                Debug.Log("Tower is already at maximum level.");
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("No BaseTower script found on the hit object.");
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("Hit object is not a Tower.");
+                    }
+                }
+            }
+        }
+        else
+        {
+            upgradeText.SetActive(false);
+        }
+
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (!isUpgrading)
+            {
+                isPlacing = !isPlacing;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            if (!isPlacing)
+            {
+                isUpgrading = !isUpgrading;
+            }
         }
     }
 
@@ -97,7 +154,7 @@ public class TowerManager : MonoBehaviour
     {
         foreach (ResourceCost resourceCost in currentTowerSO.resourceCosts)
         {
-            if (resourceManager.GetResourceAmount(resourceCost.resourceType) < resourceCost.cost)
+            if (ResourceManager.Instance.GetResourceAmount(resourceCost.resourceType) < resourceCost.cost)
             {
                 return false;
             }
@@ -108,9 +165,16 @@ public class TowerManager : MonoBehaviour
 
     private void DeductResources()
     {
-        foreach (ResourceCost resourceCost in currentTowerSO.resourceCosts)
+        if (isPlacing)
         {
-            resourceManager.RemoveResource(resourceCost.resourceType, resourceCost.cost);
+            foreach (ResourceCost resourceCost in currentTowerSO.resourceCosts)
+            {
+                ResourceManager.Instance.RemoveResource(resourceCost.resourceType, resourceCost.cost);
+            }
+        }
+        if (isUpgrading)
+        {
+            ResourceManager.Instance.RemoveResource(ResourceType.Gold, upgradeCost);
         }
     }
 }
